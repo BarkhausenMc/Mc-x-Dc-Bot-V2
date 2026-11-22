@@ -32,6 +32,16 @@ bot.on("playerChat", (event) => {
     discord.sendChat(username, message)
 })
 
+bot.on("message", (message, position) => {
+    console.log(`[RAW-STRING] (${position}): ${message.toString()}`)
+    console.log(`[RAW-JSON] (${position}): ${JSON.stringify(message)}`)
+})
+
+bot.on("messagestr", (message, position, sender) => {
+    console.log(`[MESSAGESTR] (${position}): ${message}`)
+    console.log(`[MESSAGESTR-SENDER] (${position}): ${sender ? sender.name || sender : "n/a"}`)
+})
+
 bot.on("login", () => {
     console.log("Minecraft-Bot eingeloggt.")
 })

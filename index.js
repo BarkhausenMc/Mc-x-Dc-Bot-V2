@@ -24,22 +24,24 @@ bot.on("error", (err) => {
     console.error("Minecraft-Fehler:", err.message)
 })
 
-bot.on("playerChat", (event) => {
-    const username = event.senderName || "Unbekannt"
-    const message = event.plainMessage || (event.contents && event.contents.toString()) || ""
-    if (!message) return
-    console.log(`[Chat] ${username}: ${message}`)
-    discord.sendChat(username, message)
-})
+bot.on("message", (message) => {
+    const text = message.toString().trim()
+    if (!text) return
 
-bot.on("message", (message, position) => {
-    console.log(`[RAW-STRING] (${position}): ${message.toString()}`)
-    console.log(`[RAW-JSON] (${position}): ${JSON.stringify(message)}`)
-})
+    const withoutTags = text.replace(/(\[[^\]]*\]\s*)+/g, "")
+    const separatorIndex = withoutTags.indexOf(": ")
+    if (separatorIndex === -1) return
 
-bot.on("messagestr", (message, position, sender) => {
-    console.log(`[MESSAGESTR] (${position}): ${message}`)
-    console.log(`[MESSAGESTR-SENDER] (${position}): ${sender ? sender.name || sender : "n/a"}`)
+    const beforeName = withoutTags.slice(0, separatorIndex).trim()
+    const chatMessage = withoutTags.slice(separatorIndex + 2).trim()
+    if (!chatMessage) return
+
+    const nameParts = beforeName.split(" ")
+    const username = nameParts[nameParts.length - 1]
+    if (!/^[A-Za-z0-9_]{1,16}$/.test(username)) return
+
+    console.log(`[Chat] ${username}: ${chatMessage}`)
+    discord.sendChat(username, chatMessage)
 })
 
 bot.on("login", () => {
